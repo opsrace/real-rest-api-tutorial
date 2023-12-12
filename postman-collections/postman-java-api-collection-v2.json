@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "19a59b56-db12-4b8d-b276-e6efa6ab543d",
+		"name": "Cars Operation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31263979"
+	},
+	"item": [
+		{
+			"name": "List all cars",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/cars"
+			},
+			"response": []
+		},
+		{
+			"name": "Get One",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/cars/3"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/cars/4037"
+			},
+			"response": []
+		},
+		{
+			"name": "Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"registrationNumber\": \"LEX 9876\",\n \"make\": \"Alsvin\",\n \"model\": \"Lumier\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars"
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"registrationNumber\": \"LEX 2233\",\n \"make\": \"Suzuki\",\n \"model\": \"Wagon R\",\n \"features\" : [\"Hill Assit\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/3"
+			},
+			"response": []
+		},
+		{
+			"name": "update make",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"make\": \"Alsvin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4/update-make"
+			},
+			"response": []
+		},
+		{
+			"name": "update model",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"model\": \"DST Lumier\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4/update-model"
+			},
+			"response": []
+		},
+		{
+			"name": "update registrationNumber",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"registrationNumber\": \"X9bc\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4/update-registration"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-REPLACE",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"replace\",\n\"path\": \"/make\",\n\"value\": \"Alsvin\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-ADD",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"add\",\n\"path\": \"/features/0\",\n\"value\": \"Sunroof\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-REMOVE",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"remove\",\n\"path\": \"/features/0\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-MOVE",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"move\",\n\"from\": \"/features/0\",\n\"path\": \"/features/-\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-COPY",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"copy\",\n\"from\": \"/features/0\",\n\"path\": \"/features/-\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		},
+		{
+			"name": "RealPatch-TEST",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\n\"op\": \"test\",\n\"path\": \"/features/0\",\n\"value\": \"DCX\"\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/cars/4"
+			},
+			"response": []
+		}
+	]
+}
