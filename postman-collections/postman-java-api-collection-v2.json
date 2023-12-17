@@ -130,14 +130,14 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\n\"op\": \"replace\",\n\"path\": \"/make\",\n\"value\": \"Alsvin\"\n}]",
+					"raw": "[\n    {\n        \"op\": \"replace\",\n        \"path\": \"/model\",\n        \"value\": \"Macbook\"\n    },\n    {\n        \"op\": \"replace\",\n        \"path\": \"/make\",\n        \"value\": \"Apple\"\n    }\n]",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		},
@@ -148,14 +148,14 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\n\"op\": \"add\",\n\"path\": \"/features/0\",\n\"value\": \"Sunroof\"\n}]",
+					"raw": "[{\n\"op\": \"add\",\n\"path\": \"/features/-\",\n\"value\": \"XYZ\"\n}]",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		},
@@ -173,7 +173,7 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		},
@@ -191,7 +191,7 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		},
@@ -209,7 +209,7 @@
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		},
@@ -220,14 +220,14 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[{\n\"op\": \"test\",\n\"path\": \"/features/0\",\n\"value\": \"DCX\"\n}]",
+					"raw": "[{\n\"op\": \"test\",\n\"path\": \"/features/0\",\n\"value\": \"Hill Assits\"\n}]",
 					"options": {
 						"raw": {
 							"language": "json"
 						}
 					}
 				},
-				"url": "http://localhost:8080/api/v1/cars/4"
+				"url": "http://localhost:8080/api/v1/cars/3"
 			},
 			"response": []
 		}
