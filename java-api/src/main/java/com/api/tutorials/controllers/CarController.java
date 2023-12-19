@@ -4,6 +4,7 @@ import com.api.tutorials.dtos.BooleanResponse;
 import com.api.tutorials.dtos.Car;
 import com.api.tutorials.exceptions.BadRequestException;
 import com.api.tutorials.exceptions.RecordNotFoundException;
+import com.api.tutorials.services.CarService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,13 +26,10 @@ public class CarController {
     private static Long id = 0L;
     Map<Long, Car> cars = new HashMap<>();
 
-    public CarController() {
-        //initialize few cars
-        cars.put(++id, new Car(id, "LAX 001", "Honda", "City", List.of("Manual")));
-        cars.put(++id, new Car(id, "LAX 002", "Honda", "Civic", List.of("Automatic")));
-        cars.put(++id, new Car(id, "LAX 003", "Honda", "Accord", List.of("Automatic", "Electric")));
-        cars.put(++id, new Car(id, "LAX 004", "Honda", "Lumiere", List.of("DCT")));
+    private final CarService service;
 
+    public CarController(CarService service) {
+        this.service = service;
     }
 
     @GetMapping
@@ -42,14 +40,19 @@ public class CarController {
 
     @PostMapping
     public Car add(@RequestBody Car car) {
-        car.setId(++id);
-        cars.put(car.getId(), car);
-        return car;
+
+        return service.add(car);
+    }
+
+    @GetMapping("/{carId}")
+    public Car findById(@PathVariable("carId") String carId) {
+
+        return service.findById(carId);
     }
 
     @PutMapping("/{carId}")
     public Car edit(@PathVariable("carId") String carId, @RequestBody Car car) {
-        Long carIdNumber = toLong(carId);
+       /* Long carIdNumber = toLong(carId);
         car.setId(carIdNumber);
 
         if (!cars.containsKey(carIdNumber)) {
@@ -59,7 +62,7 @@ public class CarController {
         }
 
 
-        cars.put(car.getId(), car);
+        cars.put(car.getId(), car); */
         return car;
     }
 
@@ -79,7 +82,7 @@ public class CarController {
             throw new BadRequestException(e.getMessage());
         }
 
-        cars.put(car.getId(), patchedCar);
+        //cars.put(car.getId(), patchedCar);
         return patchedCar;
     }
 
@@ -137,20 +140,6 @@ public class CarController {
         }
 
         cars.get(carIdNumber).setModel(car.getModel());
-
-        return cars.get(carIdNumber);
-    }
-
-
-    @GetMapping("/{carId}")
-    public Car findById(@PathVariable("carId") String carId) {
-
-
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
 
         return cars.get(carIdNumber);
     }
