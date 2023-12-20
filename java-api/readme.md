@@ -5,7 +5,6 @@ docker build -t japp .
 docker run -it --rm japp
 
 `docker run -p 8099:8080 --network=demo-network java-api-example:latest`
-
 ### Get container shell access
 `docker exec -it containerId /bin/sh`
 
