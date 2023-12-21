@@ -2,171 +2,83 @@ package com.api.tutorials.controllers;
 
 import com.api.tutorials.dtos.BooleanResponse;
 import com.api.tutorials.dtos.Car;
-import com.api.tutorials.exceptions.BadRequestException;
-import com.api.tutorials.exceptions.RecordNotFoundException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.api.tutorials.services.CarService;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static com.api.tutorials.utility.ValueUtils.toLongValue;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/cars")
 public class CarController {
 
-    private static Long id = 0L;
-    Map<Long, Car> cars = new HashMap<>();
+    private final CarService service;
 
-    public CarController() {
-        //initialize few cars
-        cars.put(++id, new Car(id, "LAX 001", "Honda", "City", List.of("Manual")));
-        cars.put(++id, new Car(id, "LAX 002", "Honda", "Civic", List.of("Automatic")));
-        cars.put(++id, new Car(id, "LAX 003", "Honda", "Accord", List.of("Automatic", "Electric")));
-        cars.put(++id, new Car(id, "LAX 004", "Honda", "Lumiere", List.of("DCT")));
-
+    public CarController(CarService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Car> list() {
 
-        return new ArrayList<>(cars.values());
+        return service.list();
+    }
+
+    @GetMapping("/{carId}")
+    public Car findById(@PathVariable("carId") String carId) {
+        Long carIdNumber = toLongValue(carId);
+
+        return service.findById(carIdNumber);
     }
 
     @PostMapping
-    public Car add(@RequestBody Car car) {
-        car.setId(++id);
-        cars.put(car.getId(), car);
-        return car;
+    public Car create(@RequestBody Car car) {
+
+        return service.create(car);
     }
 
     @PutMapping("/{carId}")
-    public Car edit(@PathVariable("carId") String carId, @RequestBody Car car) {
-        Long carIdNumber = toLong(carId);
-        car.setId(carIdNumber);
+    public Car update(@PathVariable("carId") String carId, @RequestBody Car car) {
+        car.setId(toLongValue(carId));
 
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        } else if (null == car.getRegistrationNumber() || car.getRegistrationNumber().isEmpty()) {
-            throw new BadRequestException("Car registration number cannot be null");
-        }
-
-
-        cars.put(car.getId(), car);
-        return car;
+        return service.update(car);
     }
 
     @PatchMapping("/{carId}")
     public Car partialUpdate(@PathVariable("carId") String carId, @RequestBody JsonPatch patch) {
-        Long carIdNumber = toLong(carId);
+        Long carIdNumber = toLongValue(carId);
 
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        Car car = cars.get(carIdNumber);
-        Car patchedCar;
-        try {
-            patchedCar = applyPatch(car, patch);
-        }catch (Exception e) {
-            throw new BadRequestException(e.getMessage());
-        }
-
-        cars.put(car.getId(), patchedCar);
-        return patchedCar;
+        return service.partialUpdate(carIdNumber, patch);
     }
 
-    private Car applyPatch(Car car, JsonPatch patch) throws JsonPatchException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode patched = patch.apply(objectMapper.convertValue(car, JsonNode.class));
-
-        return objectMapper.treeToValue(patched, Car.class);
-    }
 
     @DeleteMapping("/{carId}")
     public BooleanResponse delete(@PathVariable("carId") String carId) {
-        Long carIdNumber = toLong(carId);
+        Long carIdNumber = toLongValue(carId);
 
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.remove(carIdNumber);
-        return BooleanResponse.success();
+        return service.delete(carIdNumber);
     }
 
+    @Deprecated
     @PatchMapping("/{carId}/update-registration")
     public Car updateRegistration(@PathVariable("carId") String carId, @RequestBody Car car) {
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setRegistrationNumber(car.getRegistrationNumber());
-
-        return cars.get(carIdNumber);
+        return service.updateRegistration(carId, car);
     }
 
+    @Deprecated
     @PatchMapping("/{carId}/update-make")
     public Car updateMake(@PathVariable("carId") String carId, @RequestBody Car car) {
-        Long carIdNumber = toLong(carId);
+        return service.updateMake(carId, car);
 
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setMake(car.getMake());
-
-        return cars.get(carIdNumber);
     }
 
+    @Deprecated
     @PatchMapping("/{carId}/update-model")
     public Car updateModel(@PathVariable("carId") String carId, @RequestBody Car car) {
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setModel(car.getModel());
-
-        return cars.get(carIdNumber);
-    }
-
-
-    @GetMapping("/{carId}")
-    public Car findById(@PathVariable("carId") String carId) {
-
-
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        return cars.get(carIdNumber);
-    }
-
-    private Long toLong(String strValue) {
-        if (null == strValue) {
-            throw new BadRequestException("Null value passed");
-        }
-
-        Long longValue;
-        try {
-            longValue = Long.valueOf(strValue);
-        } catch (NumberFormatException exception) {
-            throw new BadRequestException(3106, "Id is not valid positive integer");
-        }
-
-        return longValue;
+        return service.updateModel(carId, car);
     }
 }
