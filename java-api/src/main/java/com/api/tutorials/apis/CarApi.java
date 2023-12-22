@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public interface CarApi {
     @PatchMapping("/{carId}")
     Car partialUpdate(@PathVariable("carId") String carId, @RequestBody JsonPatch patch);
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{carId}")
     BooleanResponse delete(@PathVariable("carId") String carId);
 }
