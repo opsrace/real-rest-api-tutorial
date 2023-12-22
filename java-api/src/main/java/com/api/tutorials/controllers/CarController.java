@@ -1,5 +1,6 @@
 package com.api.tutorials.controllers;
 
+import com.api.tutorials.apis.CarApi;
 import com.api.tutorials.dtos.BooleanResponse;
 import com.api.tutorials.dtos.Car;
 import com.api.tutorials.services.CarService;
@@ -14,7 +15,7 @@ import static com.api.tutorials.utility.ValueUtils.toLongValue;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/cars")
-public class CarController {
+public class CarController implements CarApi {
 
     private final CarService service;
 
@@ -22,33 +23,38 @@ public class CarController {
         this.service = service;
     }
 
-    @GetMapping
+
+    @Override
     public List<Car> list() {
 
         return service.list();
     }
 
-    @GetMapping("/{carId}")
+    @Override
+  //  @GetMapping("/{carId}")
     public Car findById(@PathVariable("carId") String carId) {
         Long carIdNumber = toLongValue(carId);
 
         return service.findById(carIdNumber);
     }
 
-    @PostMapping
+    @Override
+    //@PostMapping
     public Car create(@RequestBody Car car) {
 
         return service.create(car);
     }
 
-    @PutMapping("/{carId}")
+    @Override
+    //@PutMapping("/{carId}")
     public Car update(@PathVariable("carId") String carId, @RequestBody Car car) {
         car.setId(toLongValue(carId));
 
         return service.update(car);
     }
 
-    @PatchMapping("/{carId}")
+    @Override
+    //@PatchMapping("/{carId}")
     public Car partialUpdate(@PathVariable("carId") String carId, @RequestBody JsonPatch patch) {
         Long carIdNumber = toLongValue(carId);
 
@@ -56,7 +62,8 @@ public class CarController {
     }
 
 
-    @DeleteMapping("/{carId}")
+    @Override
+    //@DeleteMapping("/{carId}")
     public BooleanResponse delete(@PathVariable("carId") String carId) {
         Long carIdNumber = toLongValue(carId);
 
