@@ -2,14 +2,13 @@ package com.api.tutorials.configs;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
 @SecurityScheme(
@@ -22,10 +21,6 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI usersMicroserviceOpenAPI() {
-        /*return new OpenAPI()
-                .info(new Info().title("Real REST API")
-                                 .description("These are REST API for CRUD Operations")
-                                 .version("1.0"));*/
 
         Server localServer = new Server()
                 .url("http://localhost:8080")

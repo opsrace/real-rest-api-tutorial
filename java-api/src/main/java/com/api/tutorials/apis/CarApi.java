@@ -15,13 +15,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public interface CarApi {
+public interface CarApi extends BusinessApi{
     @GetMapping
     List<Car> list();
 
-    @Operation(summary = "Find car by ID", description = "This API lookup pre-existing Cars in the database if its found it returns the Car object otherwise an exception is thrown")
+    @GetMapping("/{carId}")
+    Car findById(@Parameter(description = "Id of the Car which is not null positive integer") @PathVariable("carId") String carId);
+
+    @Operation(summary = "Create Car", description = "This API will create new car object and will assign a unique id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Find Car By Id",
+            @ApiResponse(responseCode = "200", description = "Car Created",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Car.class)) }),
             @ApiResponse(responseCode = "400", description = "Bad Request",
@@ -29,11 +32,11 @@ public interface CarApi {
                             schema = @Schema(implementation = ExceptionResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Car Not Found",
                     content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ExceptionResponse.class))}),
+            @ApiResponse(responseCode = "5xx", description = "Internal Server Errors",
+                    content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ExceptionResponse.class))})
     })
-    @GetMapping("/{carId}")
-    Car findById(@Parameter(description = "Id of the Car which is not null positive integer") @PathVariable("carId") String carId);
-
     @PostMapping
     Car create(@RequestBody Car car);
 

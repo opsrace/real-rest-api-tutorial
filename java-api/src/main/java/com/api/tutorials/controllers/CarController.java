@@ -23,7 +23,6 @@ public class CarController implements CarApi {
         this.service = service;
     }
 
-
     @Override
     public List<Car> list() {
 
@@ -31,7 +30,6 @@ public class CarController implements CarApi {
     }
 
     @Override
-  //  @GetMapping("/{carId}")
     public Car findById(@PathVariable("carId") String carId) {
         Long carIdNumber = toLongValue(carId);
 
@@ -39,14 +37,12 @@ public class CarController implements CarApi {
     }
 
     @Override
-    //@PostMapping
     public Car create(@RequestBody Car car) {
 
         return service.create(car);
     }
 
     @Override
-    //@PutMapping("/{carId}")
     public Car update(@PathVariable("carId") String carId, @RequestBody Car car) {
         car.setId(toLongValue(carId));
 
@@ -54,7 +50,6 @@ public class CarController implements CarApi {
     }
 
     @Override
-    //@PatchMapping("/{carId}")
     public Car partialUpdate(@PathVariable("carId") String carId, @RequestBody JsonPatch patch) {
         Long carIdNumber = toLongValue(carId);
 
@@ -63,7 +58,6 @@ public class CarController implements CarApi {
 
 
     @Override
-    //@DeleteMapping("/{carId}")
     public BooleanResponse delete(@PathVariable("carId") String carId) {
         Long carIdNumber = toLongValue(carId);
 
