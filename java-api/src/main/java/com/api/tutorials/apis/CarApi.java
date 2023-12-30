@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequestMapping("/api/v1/cars")
 public interface CarApi extends BusinessApi{
     @GetMapping
     List<Car> list();

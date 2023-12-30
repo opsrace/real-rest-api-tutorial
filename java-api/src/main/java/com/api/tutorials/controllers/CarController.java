@@ -6,7 +6,7 @@ import com.api.tutorials.dtos.Car;
 import com.api.tutorials.services.CarService;
 import com.github.fge.jsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import static com.api.tutorials.utility.ValueUtils.toLongValue;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/cars")
 public class CarController implements CarApi {
 
     private final CarService service;
@@ -30,27 +29,27 @@ public class CarController implements CarApi {
     }
 
     @Override
-    public Car findById(@PathVariable("carId") String carId) {
+    public Car findById(String carId) {
         Long carIdNumber = toLongValue(carId);
 
         return service.findById(carIdNumber);
     }
 
     @Override
-    public Car create(@RequestBody Car car) {
+    public Car create(Car car) {
 
         return service.create(car);
     }
 
     @Override
-    public Car update(@PathVariable("carId") String carId, @RequestBody Car car) {
+    public Car update(String carId, Car car) {
         car.setId(toLongValue(carId));
 
         return service.update(car);
     }
 
     @Override
-    public Car partialUpdate(@PathVariable("carId") String carId, @RequestBody JsonPatch patch) {
+    public Car partialUpdate(String carId, JsonPatch patch) {
         Long carIdNumber = toLongValue(carId);
 
         return service.partialUpdate(carIdNumber, patch);
@@ -58,28 +57,9 @@ public class CarController implements CarApi {
 
 
     @Override
-    public BooleanResponse delete(@PathVariable("carId") String carId) {
+    public BooleanResponse delete(String carId) {
         Long carIdNumber = toLongValue(carId);
 
         return service.delete(carIdNumber);
-    }
-
-    @Deprecated
-    @PatchMapping("/{carId}/update-registration")
-    public Car updateRegistration(@PathVariable("carId") String carId, @RequestBody Car car) {
-        return service.updateRegistration(carId, car);
-    }
-
-    @Deprecated
-    @PatchMapping("/{carId}/update-make")
-    public Car updateMake(@PathVariable("carId") String carId, @RequestBody Car car) {
-        return service.updateMake(carId, car);
-
-    }
-
-    @Deprecated
-    @PatchMapping("/{carId}/update-model")
-    public Car updateModel(@PathVariable("carId") String carId, @RequestBody Car car) {
-        return service.updateModel(carId, car);
     }
 }
