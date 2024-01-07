@@ -30,12 +30,14 @@ pipeline {
             steps {
                 echo "Building Docker Image ... "
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub_mazhar_dec', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
-                        sh 'cd java-api'
-                        sh 'docker build -t api-example:java-0.2 .'
-                        sh 'docker tag api-example:java-2.0 javaarchitect/api-example:java-2.0'
-                        sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin'
-                        sh 'docker push javaarchitect/api-example:java-2.0'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_mazhar', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
+                        dir("java-api) {
+                            sh 'docker build -t api-example:java-0.2 .'
+                            sh 'docker tag api-example:java-2.0 javaarchitect/api-example:java-2.0'
+                            sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin'
+                            sh 'docker push javaarchitect/api-example:java-2.0'
+                        }
+                        
                     }
                 }
             }
