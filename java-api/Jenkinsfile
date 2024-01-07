@@ -26,14 +26,17 @@ pipeline {
                 sh 'mvn -f java-api/pom.xml test'
             }
         }
-        stage("Build Docker") {
-            script {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub_mazhar_dec', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
-                    sh 'cd java-api'
-                    sh 'docker build -t api-example:java-0.2 .'
-                    sh 'docker tag api-example:java-2.0 javaarchitect/api-example:java-2.0'
-                    sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin'
-                    sh 'docker push javaarchitect/api-example:java-2.0'
+        stage("Build Docker Image") {
+            steps {
+                echo "Building Docker Image ... "
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_mazhar_dec', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
+                        sh 'cd java-api'
+                        sh 'docker build -t api-example:java-0.2 .'
+                        sh 'docker tag api-example:java-2.0 javaarchitect/api-example:java-2.0'
+                        sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin'
+                        sh 'docker push javaarchitect/api-example:java-2.0'
+                    }
                 }
             }
         }
