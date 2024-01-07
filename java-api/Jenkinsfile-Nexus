@@ -36,7 +36,7 @@ pipeline {
                         dir('java-api') {
                             sh 'docker build -t api-example:java-2.0 . '
                             sh 'docker tag api-example:java-2.0 host.docker.internal:8082/api-example:java-2.0'
-                            sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin Jenkinsfile-Nexus host.docker.internal:8082'
+                            sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin host.docker.internal:8082'
                             sh 'docker push host.docker.internal:8082/api-example:java-2.0'
                         }
                         
