@@ -9,11 +9,10 @@ pipeline {
         booleanParam(name: 'runTests', defaultValue: true, description: 'Do you want to run Tests?')
     }
     stages {
-        stage("Build") {
+        stage("Build Jar") {
             steps {
                 echo "Building..."
-                sh 'cd java-api'
-                sh 'mvn package'
+                sh 'mvn -f java-api/pom.xml clean'
             }
         }
         stage("Test") {
@@ -24,6 +23,18 @@ pipeline {
             }
             steps {
                 echo "Testing..."
+                sh 'mvn -f java-api/pom.xml test'
+            }
+        }
+        stage("Build Docker") {
+            script {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub_mazhar_dec', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
+                    sh 'cd java-api'
+                    sh 'docker build -t api-example:java-0.2 .'
+                    sh 'docker tag api-example:java-2.0 javaarchitect/api-example:java-2.0'
+                    sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin'
+                    sh 'docker push javaarchitect/api-example:java-2.0'
+                }
             }
         }
         stage("Deploy") {
