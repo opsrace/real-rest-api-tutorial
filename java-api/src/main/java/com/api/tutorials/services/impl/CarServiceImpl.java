@@ -1,7 +1,10 @@
 package com.api.tutorials.services.impl;
 
+import com.api.tutorials.dao.CarRepository;
+import com.api.tutorials.dao.beans.CarDocument;
 import com.api.tutorials.dtos.BooleanResponse;
 import com.api.tutorials.dtos.Car;
+import com.api.tutorials.dtos.CarListRequest;
 import com.api.tutorials.exceptions.BadRequestException;
 import com.api.tutorials.exceptions.RecordNotFoundException;
 import com.api.tutorials.services.CarService;
@@ -12,137 +15,94 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.api.tutorials.services.validators.CarValidator.validateCar;
-import static com.api.tutorials.utility.ValueUtils.isEmpty;
-import static org.apache.commons.lang3.math.NumberUtils.toLong;
+import static com.api.tutorials.services.mappers.CarMapper.*;
+import static com.api.tutorials.services.validators.CarValidator.validateCarAndId;
+import static com.api.tutorials.services.validators.CarValidator.validateId;
 
 @Service
 public class CarServiceImpl implements CarService {
     private static Long id = 0L;
-    Map<Long, Car> cars = new HashMap<>();
-
-    public CarServiceImpl() {
-        //initialize few cars
-        cars.put(++id, new Car(id, "LAX 001", "Honda", "City", List.of("Manual")));
-        cars.put(++id, new Car(id, "LAX 002", "Honda", "Civic", List.of("Automatic")));
-        cars.put(++id, new Car(id, "LAX 003", "Honda", "Accord", List.of("Automatic", "Electric")));
-        cars.put(++id, new Car(id, "LAX 004", "Honda", "Lumiere", List.of("DCT")));
+    private final CarRepository repository;
+    public CarServiceImpl(CarRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public List<Car> list() {
-        return new ArrayList<>(cars.values());
+
+        return toDtoList(repository.findAll());
     }
 
     @Override
-    public Car findById(Long carId) {
+    public List<Car> search(CarListRequest request) {
+        return list();
+    }
 
-        if (!cars.containsKey(carId)) {
-            throw new RecordNotFoundException("Car not found");
-        }
+    @Override
+    public Car findById(String carId) {
 
-        return cars.get(carId);
+        return toDto(fetchById(carId));
+    }
+
+    private CarDocument fetchById(String carId) {
+
+        return repository.findById(carId).orElseThrow(() -> new RecordNotFoundException("Car not found"));
     }
 
     @Override
     public Car create(Car car) {
-        validateCar(car);
-        car.setId(++id);
-        cars.put(car.getId(), car);
 
-        return car;
+        return toDto(repository.save(toDocument(car)));
     }
 
     @Override
     public Car update(Car car) {
+        validateCarAndId(car);
 
-        if (!cars.containsKey(car.getId())) {
-            throw new RecordNotFoundException("Car not found");
-        } else if (isEmpty(car.getRegistrationNumber())) {
-            throw new BadRequestException("Car registration number cannot be null");
-        }
-        cars.put(car.getId(), car);
+        CarDocument existingDocument = fetchById(car.getId());
+        existingDocument.setFeatures(car.getFeatures());
+        existingDocument.setMake(car.getMake());
+        existingDocument.setModel(car.getModel());
+        existingDocument.setRegistrationNumber(car.getRegistrationNumber());
+        repository.save(existingDocument);
 
-        return car;
+        return toDto(existingDocument);
     }
 
     @Override
-    public BooleanResponse delete(Long id) {
-        if (!cars.containsKey(id)) {
+    public BooleanResponse delete(String id) {
+        validateId(id);
+
+        if (!repository.existsById(id)) {
             throw new RecordNotFoundException("Car not found");
         }
-        cars.remove(id);
+        repository.deleteById(id);
 
         return BooleanResponse.success();
     }
 
     @Override
-    public Car partialUpdate(Long id, JsonPatch patch) {
-        if (!cars.containsKey(id)) {
-            throw new RecordNotFoundException("Car not found");
-        }
+    public Car partialUpdate(String id, JsonPatch patch) {
+        validateId(id);
 
-        Car car = cars.get(id);
-        Car patchedCar;
+        CarDocument car = fetchById(id);
+        CarDocument patchedCar;
         try {
             patchedCar = applyPatch(car, patch);
         } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
+        repository.save(patchedCar);
 
-        cars.put(car.getId(), patchedCar);
-        return patchedCar;
+        return toDto(patchedCar);
     }
 
-    private Car applyPatch(Car car, JsonPatch patch) throws JsonPatchException, JsonProcessingException {
+    private CarDocument applyPatch(CarDocument car, JsonPatch patch) throws JsonPatchException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode patched = patch.apply(objectMapper.convertValue(car, JsonNode.class));
 
-        return objectMapper.treeToValue(patched, Car.class);
+        return objectMapper.treeToValue(patched, CarDocument.class);
     }
-
-    @Override
-    public Car updateRegistration(String carId, Car car) {
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setRegistrationNumber(car.getRegistrationNumber());
-
-        return cars.get(carIdNumber);
-    }
-
-    @Override
-    public Car updateMake(String carId, Car car) {
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setMake(car.getMake());
-
-        return cars.get(carIdNumber);
-    }
-
-    @Override
-    public Car updateModel(String carId, Car car) {
-        Long carIdNumber = toLong(carId);
-
-        if (!cars.containsKey(carIdNumber)) {
-            throw new RecordNotFoundException("Car not found");
-        }
-
-        cars.get(carIdNumber).setModel(car.getModel());
-
-        return cars.get(carIdNumber);
-    }
-
 }
