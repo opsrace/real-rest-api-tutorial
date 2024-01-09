@@ -7,10 +7,7 @@ import com.api.tutorials.dtos.CarListRequest;
 import com.api.tutorials.services.CarService;
 import com.github.fge.jsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,7 +45,7 @@ public class CarController implements CarApi {
     }
 
     @PostMapping("/search")
-    public List<Car> search(CarListRequest request) {
+    public List<Car> search(@RequestBody CarListRequest request) {
         log.info("Search params are {}", request);
 
         return service.search(request);

@@ -2,9 +2,7 @@ package com.api.tutorials.services.impl;
 
 import com.api.tutorials.dao.CarRepository;
 import com.api.tutorials.dao.beans.CarDocument;
-import com.api.tutorials.dtos.BooleanResponse;
-import com.api.tutorials.dtos.Car;
-import com.api.tutorials.dtos.CarListRequest;
+import com.api.tutorials.dtos.*;
 import com.api.tutorials.exceptions.BadRequestException;
 import com.api.tutorials.exceptions.RecordNotFoundException;
 import com.api.tutorials.services.CarService;
@@ -14,7 +12,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 
 import static com.api.tutorials.services.mappers.CarMapper.*;
@@ -23,10 +25,12 @@ import static com.api.tutorials.services.validators.CarValidator.validateId;
 
 @Service
 public class CarServiceImpl implements CarService {
-    private static Long id = 0L;
+
     private final CarRepository repository;
-    public CarServiceImpl(CarRepository repository) {
+    private final MongoTemplate mongoTemplate;
+    public CarServiceImpl(CarRepository repository, MongoTemplate mongoTemplate) {
         this.repository = repository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -37,7 +41,42 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<Car> search(CarListRequest request) {
-        return list();
+        Query query = new Query();
+
+        // Apply filters
+        if (request.getFilters() != null) {
+            for (ListFilter filter : request.getFilters()) {
+                Criteria criteria = Criteria.where(filter.getField());
+                switch (filter.getOperator()) {
+                    case OR:
+                    case IN:
+                        criteria.in(filter.getValues());
+                        break;
+                    // Implement other operators as needed
+                    // Handle GREATER, LESSER, AND, OR, NOT, etc.
+                    default:
+                        break;
+                }
+                query.addCriteria(criteria);
+            }
+        }
+
+        // Apply sorting
+        if (request.getSorting() != null) {
+            for (ListSort sort : request.getSorting()) {
+                Sort.Direction direction = sort.getAscending() ? Sort.Direction.ASC : Sort.Direction.DESC;
+                query.with(Sort.by(direction, sort.getField()));
+            }
+        }
+
+        // Paginate results
+        PageRequest pageRequest = PageRequest.of(request.getPageNumber() - 1, request.getRecordPerPage());
+        query.with(pageRequest);
+
+        // Fetch data from MongoDB using the constructed query
+        List<CarDocument> carDocuments = mongoTemplate.find(query, CarDocument.class);
+
+        return toDtoList(carDocuments);
     }
 
     @Override
