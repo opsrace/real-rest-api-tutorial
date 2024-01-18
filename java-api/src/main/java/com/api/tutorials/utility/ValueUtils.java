@@ -2,6 +2,10 @@ package com.api.tutorials.utility;
 
 import com.api.tutorials.exceptions.BadRequestException;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class ValueUtils {
 
     public static boolean isEmpty(String value) {
@@ -21,5 +25,9 @@ public class ValueUtils {
         }
 
         return longValue;
+    }
+
+    public static boolean isEmpty(Collection makes) {
+        return null == makes || makes.isEmpty();
     }
 }

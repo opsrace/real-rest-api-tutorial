@@ -17,8 +17,17 @@ import java.util.List;
 
 @RequestMapping("/api/v1/cars")
 public interface CarApi extends BusinessApi{
+
+
     @GetMapping
-    List<Car> list();
+    List<Car> lists(
+            @RequestParam(value = "pageNo", required = false) Integer pageNo,
+            @RequestParam(value = "recordPerPage", required = false) Integer recordPerPage,
+            @RequestParam(value = "model", required = false) List<String> models,
+            @RequestParam(value = "make", required = false) List<String> makes,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder
+    );
 
     @GetMapping("/{carId}")
     Car findById(@Parameter(description = "Id of the Car which is not null positive integer") @PathVariable("carId") String carId);

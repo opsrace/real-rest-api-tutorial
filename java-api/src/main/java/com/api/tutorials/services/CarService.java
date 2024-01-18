@@ -8,7 +8,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import java.util.List;
 
 public interface CarService {
-    List<Car> list();
+    List<Car> list(Integer pageNo, Integer recordPerPage, List<String> models, List<String> makes, String sortBy, String sortOrder);
     Car findById(String id);
     Car create(Car car);
     Car update(Car car);

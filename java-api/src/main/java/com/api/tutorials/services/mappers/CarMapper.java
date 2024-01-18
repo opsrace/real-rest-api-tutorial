@@ -1,7 +1,8 @@
 package com.api.tutorials.services.mappers;
 
 import com.api.tutorials.dao.beans.CarDocument;
-import com.api.tutorials.dtos.Car;
+import com.api.tutorials.dtos.*;
+import com.api.tutorials.utility.ValueUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,5 +36,23 @@ public class CarMapper {
         doc.setFeatures(car.getFeatures());
 
         return doc;
+    }
+
+    public static CarListRequest toListRequest(Integer pageNo, Integer recordPerPage, List<String> models, List<String> makes, String sortBy, String sortOrder) {
+        CarListRequest request = new CarListRequest();
+        request.setPageNumber(pageNo);
+        request.setRecordPerPage(recordPerPage);
+        if (!ValueUtils.isEmpty(models)) {
+            request.getFilters().add(new ListFilter("model", models, ListOperator.OR));
+        }
+        if (!ValueUtils.isEmpty(makes)) {
+            request.getFilters().add(new ListFilter("makes", makes, ListOperator.OR));
+        }
+        if (!ValueUtils.isEmpty(sortBy)) {
+            request.setSorting(new ArrayList<>());
+            request.getSorting().add(new ListSort(sortBy, "ASC".equals(sortOrder)));
+        }
+
+        return request;
     }
 }

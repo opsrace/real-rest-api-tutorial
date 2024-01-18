@@ -30,7 +30,7 @@ spec:
   ports:
     - name: posts
       port: 8080
-      targetPort: 8080s
+      targetPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -45,4 +45,4 @@ spec:
       protocol: TCP
       port: 8091 # Port of the service itself (NodePort Service)
       targetPort: 8080 # Port of the Pod, where the traffic will be redirected
-      nodePort: 30091 # Port for external access, its the port on the node(machine) of the cluster
+      nodePort: 30001 # Port for external access, its the port on the node(machine) of the cluster

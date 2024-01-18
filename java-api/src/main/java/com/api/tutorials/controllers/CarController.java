@@ -1,15 +1,17 @@
 package com.api.tutorials.controllers;
 
 import com.api.tutorials.apis.CarApi;
-import com.api.tutorials.dtos.BooleanResponse;
-import com.api.tutorials.dtos.Car;
-import com.api.tutorials.dtos.CarListRequest;
+import com.api.tutorials.dtos.*;
 import com.api.tutorials.services.CarService;
+import com.api.tutorials.utility.ValueUtils;
 import com.github.fge.jsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.api.tutorials.services.mappers.CarMapper.toListRequest;
 
 @Slf4j
 @RestController
@@ -22,13 +24,6 @@ public class CarController implements CarApi {
     }
 
     @Override
-    public List<Car> list() {
-
-        return service.list();
-    }
-
-    @GetMapping("/list")
-    //GET /cars?make=Alsvin,Honda&id_min=100&id_max=200&sort=make:desc,model:asc
     public List<Car> lists(
             @RequestParam(value = "pageNo", required = false) Integer pageNo,
             @RequestParam(value = "recordPerPage", required = false) Integer recordPerPage,
@@ -41,8 +36,10 @@ public class CarController implements CarApi {
         log.info("Passed makes are: {}", makes);
         log.info("Passed models are: {}", models);
 
-        return service.list();
+        return service.search(toListRequest(pageNo, recordPerPage, models, makes, sortBy, sortOrder));
     }
+
+
 
     @PostMapping("/search")
     public List<Car> search(@RequestBody CarListRequest request) {

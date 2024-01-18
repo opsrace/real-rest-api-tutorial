@@ -34,7 +34,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<Car> list() {
+    public List<Car> list(Integer pageNo, Integer recordPerPage, List<String> models, List<String> makes, String sortBy, String sortOrder) {
 
         return toDtoList(repository.findAll());
     }
