@@ -1,0 +1,54 @@
+#!/usr/bin/env groovy
+pipeline {
+    agent any
+    tools {
+        maven 'Maven 3.9.6'
+    }
+    parameters {
+        booleanParam(name: 'runTests', defaultValue: false, description: 'Do you want to run Tests?')
+    }
+    stages {
+        stage("Build Jar") {
+            steps {
+                echo "Building..."
+                dir('java-api') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+        stage("Test") {
+            when {
+                expression {
+                    params.runTests
+                }
+            }
+            steps {
+                echo "Testing..."
+                dir('java-api') {
+                    sh 'mvn test'
+                }
+            }
+        }
+        stage("Build Docker Image") {
+            steps {
+                echo "Building Docker Image ... "
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'nexus-dev-docker', passwordVariable: 'PASSWORD', usernameVariable:'USER_NAME')]) {
+                        dir('java-api') {
+                            sh 'docker build -t api-example:java-2.0 . '
+                            sh 'docker tag api-example:java-2.0 host.docker.internal:8082/api-example:java-2.0'
+                            sh 'echo $PASSWORD | docker login -u $USER_NAME --password-stdin host.docker.internal:8082'
+                            sh 'docker push host.docker.internal:8082/api-example:java-2.0'
+                        }
+
+                    }
+                }
+            }
+        }
+        stage("Deploy") {
+            steps {
+                echo "Deploying..."
+            }
+        }
+    }
+}
