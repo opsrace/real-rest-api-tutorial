@@ -24,3 +24,7 @@ an Alternate way to get into Docker linux virtual machine on macbook
 `docker logs 311a0ea3bd0ff79920e7caf05786aa35253eb203db07a42f076e18b497fdb188`
 
 `docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --network demo-network --name demo-express -e ME_CONFIG_MONGODB_SERVER=mongodb-x mongo-express` 
+
+## Run everything with Docker Compose
+`docker-compose -f docker-compose.yaml up`
+
