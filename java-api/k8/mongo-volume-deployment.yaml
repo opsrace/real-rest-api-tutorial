@@ -1,3 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-volume-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /Users/optimus/code/volumes/k8-volume-java-api #on mac this will be inside vm machine of minikube
+    #minkube ssh and confirm above path on macbook with minikube
+  storageClassName: hostpath  # Define the storage class name here
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+spec:
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteOnce
+  volumeName: mongo-volume-data
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,9 +44,13 @@ spec:
       containers:
         - name: mongodb
           image: mongo
+          args: ["--dbpath","/data/db"]
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
@@ -31,6 +62,10 @@ spec:
                 secretKeyRef:
                   name: mongo-secret
                   key: mongo-pwd
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc
 ---
 apiVersion: v1
 kind: Service

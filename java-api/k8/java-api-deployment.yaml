@@ -14,10 +14,36 @@ spec:
     spec:
       containers:
         - name: java-api-container
-          image: javaarchitect/api-example:java-2.0
+          image: javaarchitect/api-example:java-8.0
           #imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-configmap
+                  key: database_url
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-configmap
+                  key: database_port
+            - name: MONGO_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-configmap
+                  key: database_name
+            - name: MONGO_UID
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: mongo-uid
+            - name: MONGO_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: mongo-pwd
 ---
 apiVersion: v1
 kind: Service
