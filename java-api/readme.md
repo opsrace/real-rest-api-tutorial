@@ -102,6 +102,10 @@ You may experience some issues if some of the dependant containers are not up
 
 ## Kubernetes deployment
 
+
+### The deployment architecture
+![Kubernetes deployment architecture](docs/api-design-k8-architecture.png "Java API deployment architecture")
+
 ### Build Artifact(Jar file)
 `cd java-api`
 
@@ -140,9 +144,6 @@ Express username is `admin` and password is `pass`
 ### Get container shell access
 `docker exec -it containerId /bin/sh`
 
-
-
-
 ## Not important
 Get into docker linux
 
@@ -151,3 +152,7 @@ Get into docker linux
 An alternate way to get into Docker linux virtual machine on macbook
 
 `docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh`
+
+
+kubectl expose deployment mongodb-x --type=NodePort --name=mongo-np-service --port=27017 --target-port=27017 --node-port=30001
+mongo-np-service
