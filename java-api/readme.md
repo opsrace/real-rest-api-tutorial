@@ -144,6 +144,49 @@ Express username is `admin` and password is `pass`
 ### Get container shell access
 `docker exec -it containerId /bin/sh`
 
+
+## Ingress
+### Enable ingress on minikube
+`minikube addons enable ingress`
+
+### To apply ingress rules
+We have an existing dashboard service and we want to create ingress rule on top of that
+
+```
+kubectl get service -n kubernetes-dashboard
+NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+dashboard-metrics-scraper   ClusterIP   10.104.130.74   <none>        8000/TCP   2d7h
+kubernetes-dashboard        ClusterIP   10.96.208.247   <none>        80/TCP     2d7h
+```
+
+#### Create ingress
+
+`kubectl apply -f k8/dashboard-ingress.yaml`
+This will create the ingress rule for the dashboard that already exists
+
+#### Confirm Ingress
+```aidl
+kubectl get ingress -A
+NAMESPACE              NAME                CLASS   HOSTS                 ADDRESS        PORTS   AGE
+kubernetes-dashboard   dashboard-ingress   nginx   local.dashboard.com   192.168.49.2   80      62m
+```
+
+#### Update host file
+Update  `/etc/hosts` file and add `local.dashboard.com` entry to it
+
+```
+127.0.0.1	localhost
+255.255.255.255	broadcasthost
+::1             localhost
+192.168.49.2 local.dashboard.com
+```
+
+#### Tunnel on Macbook -> Minikube
+On Macbook -> minikube, the url may not be directly accessible and hence you have to create tunnel on your Macbook (Thanks to a community member helped in with this)
+
+`sudo minikube tunnel`
+
+
 ## Not important
 Get into docker linux
 
@@ -153,6 +196,3 @@ An alternate way to get into Docker linux virtual machine on macbook
 
 `docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh`
 
-
-kubectl expose deployment mongodb-x --type=NodePort --name=mongo-np-service --port=27017 --target-port=27017 --node-port=30001
-mongo-np-service
